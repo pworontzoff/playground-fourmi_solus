@@ -1,0 +1,49 @@
+title : Exercices Papers animés - La fourmi de Langton - Solutions
+
+# Table of contents
+plan:
+  - title: Paper animé - Exemple # Set the page title
+    statement: markdowns/welcome.md # Set the file path to the page content
+  - title: Exercice 1 - La fourmi de Langton # Another Page
+    statement: markdowns/fourmi.md
+  - title: Exercice 2 - La fourmi de Langton v2 
+    statement: markdowns/fourmi2.md
+  - title: Exercice 3 - La fourmi de Langton v3 
+    statement: markdowns/fourmi3.md
+  - title: Exercice 4 - La fourmi de Langton v4
+    statement: markdowns/fourmi4.md
+  - title: Exercice 5 - La fourmi de Langton v5
+    statement: markdowns/fourmi5.md
+
+# Settings for your programming projects and the associated Docker images
+projects:
+  animPaper:
+    root: "/animPaper"
+    runner:
+      name: techio/cmake-gcc-runner
+      version: latest
+  fourmi1:
+    root: "/Fourmi"
+    runner:
+      name: techio/cmake-gcc-runner
+      version: latest
+  fourmi2:
+    root: "/Fourmi2"
+    runner:
+      name: techio/cmake-gcc-runner
+      version: latest
+  fourmi3:
+    root: "/Fourmi3"
+    runner:
+      name: techio/cmake-gcc-runner
+      version: latest
+  fourmi4:
+    root: "/Fourmi4"
+    runner:
+      name: techio/cmake-gcc-runner
+      version: latest
+  fourmi5:
+    root: "/Fourmi5"
+    runner:
+      name: techio/cmake-gcc-runner
+      version: latest
