@@ -84,6 +84,7 @@ void _init_paper(struct spaper *paper, int nbl, int nbc, int size, float d, int 
 void _create_table(struct spaper work) {
     int i,j,cpt=0;
     char buffer[500]={0};
+	unsigned long long chCount = 93; /* counting chars not using buffer */
     struct colorize_element *pCur, *pPrec;
 
     fputs("<style>",work.fp);
@@ -93,8 +94,10 @@ void _create_table(struct spaper work) {
         for (j=0;j<work.nbc;j++) {
 	    pCur = work.table+i*work.nbc+j;
 	    sprintf(buffer,"\ntd#cell_%d_%d {animation: colorize_%d_%d %fs}",i,j,i,j,work.nbSteps*work.anim_duration);
+			chCount += strlen(buffer);
             fputs(buffer,work.fp);
 	    sprintf(buffer,"\n@keyframes colorize_%d_%d {",i,j);
+			chCount += strlen(buffer);
             fputs(buffer,work.fp);
 
 	    while (pCur->pNext != NULL) { // nb pCur->pNext == NULL de suite : cas d'une case jamais coloriée, pas d'animation
@@ -105,18 +108,24 @@ void _create_table(struct spaper work) {
 		    if (pCur->current_color.red==-1 && pCur->current_color.green==-1 && pCur->current_color.blue==-1) {
 			// précent et actuel transparents
                         sprintf(buffer,"\n%.3f% {background-color: rgba(0,0,0,0)}",(pPrec->numStep/(float)work.nbSteps)*100);
-                        fputs(buffer,work.fp);
+                    	chCount += strlen(buffer);    
+						fputs(buffer,work.fp);
                         sprintf(buffer,"\n%.3f% {background-color: rgba(0,0,0,0)}",((pCur->numStep/(float)work.nbSteps)*100)-0.001);
+						chCount += strlen(buffer);
                         fputs(buffer,work.fp);
                         sprintf(buffer,"\n%.3f\% {background-color: rgba(0,0,0,0)}",(pCur->numStep/(float)work.nbSteps)*100);
+						chCount += strlen(buffer);
                         fputs(buffer,work.fp);
 		    } else {
 			// précent transparent et actuel colorié
                         sprintf(buffer,"\n%.3f% {background-color: rgba(0,0,0,0)}",(pPrec->numStep/(float)work.nbSteps)*100);
+						chCount += strlen(buffer);
                         fputs(buffer,work.fp);
                         sprintf(buffer,"\n%.3f% {background-color: rgba(0,0,0,0)}",((pCur->numStep/(float)work.nbSteps)*100)-0.001);
+						chCount += strlen(buffer);
                         fputs(buffer,work.fp);
                         sprintf(buffer,"\n%.3f\% {background-color: rgb(%d,%d,%d)}",(pCur->numStep/(float)work.nbSteps)*100, pCur->current_color.red, pCur->current_color.green, pCur->current_color.blue);
+						chCount += strlen(buffer);
                         fputs(buffer,work.fp);
 		    }
 		} else {
@@ -124,39 +133,49 @@ void _create_table(struct spaper work) {
 		    if (pCur->current_color.red==-1 && pCur->current_color.green==-1 && pCur->current_color.blue==-1) {
 			// précent colorié et actuel transparent
                         sprintf(buffer,"\n%.3f% {background-color: rgb(%d,%d,%d)}",(pPrec->numStep/(float)work.nbSteps)*100, pPrec->current_color.red, pPrec->current_color.green, pPrec->current_color.blue);
+						chCount += strlen(buffer);
                         fputs(buffer,work.fp);
                         sprintf(buffer,"\n%.3f% {background-color: rgb(%d,%d,%d)}",((pCur->numStep/(float)work.nbSteps)*100)-0.001, pPrec->current_color.red, pPrec->current_color.green, pPrec->current_color.blue);
+						chCount += strlen(buffer);
                         fputs(buffer,work.fp);
                         sprintf(buffer,"\n%.3f\% {background-color: rgba(0,0,0,0)}",(pCur->numStep/(float)work.nbSteps)*100);
+						chCount += strlen(buffer);
                         fputs(buffer,work.fp);
 		    } else {
 			// précent et actuel coloriés
                         sprintf(buffer,"\n%.3f% {background-color: rgb(%d,%d,%d)}",(pPrec->numStep/(float)work.nbSteps)*100, pPrec->current_color.red, pPrec->current_color.green, pPrec->current_color.blue);
+						chCount += strlen(buffer);
                         fputs(buffer,work.fp);
                         sprintf(buffer,"\n%.3f% {background-color: rgb(%d,%d,%d)}",((pCur->numStep/(float)work.nbSteps)*100)-0.001, pPrec->current_color.red, pPrec->current_color.green, pPrec->current_color.blue);
+						chCount += strlen(buffer);
                         fputs(buffer,work.fp);
                         sprintf(buffer,"\n%.3f\% {background-color: rgb(%d,%d,%d)}",(pCur->numStep/(float)work.nbSteps)*100, pCur->current_color.red, pCur->current_color.green, pCur->current_color.blue);
+						chCount += strlen(buffer);
                         fputs(buffer,work.fp);
 		    }
 		}
             }
-	    fputs("\n}",work.fp);
+	    fputs("\n}",work.fp); // 3 char
 	}
     }
-    fputs("\n</style>",work.fp);
+    fputs("\n</style>",work.fp); // 10 char
 
     // create final table with ids at each cell : cell_'i'_'j'
-    fputs("<table id='animPaper' border=1 style='border-collapse: collapse;'>",work.fp);
+    fputs("<table id='animPaper' border=1 style='border-collapse: collapse;'>",work.fp); // 68 char
     for (i=0;i<work.nbl;i++) {
       sprintf(buffer,"<tr style='height:%dpx;'>",work.quad_size);
+	  chCount += strlen(buffer);
       fputs(buffer,work.fp);
       for (j=0;j<work.nbc;j++) {
           _create_quad(buffer,work.table+i*work.nbc+j,work.quad_size,i,j);
+		  chCount += strlen(buffer);
           fputs(buffer,work.fp);
       }
-      fputs("</tr>",work.fp);
+      fputs("</tr>",work.fp); // 4 char
     }
-    fputs("</table>",work.fp);
+    fputs("</table>",work.fp); // 8 char
+	sprintf(buffer,"<p>NBCHARTAB : %llu</p>",chCount);
+	fputs(buffer,work.fp);
     fclose(work.fp);
     if (work.status==1) printf("TECHIO> success false\n");
 }
